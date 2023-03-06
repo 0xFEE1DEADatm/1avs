@@ -1,0 +1,86 @@
+#include <iostream>
+#include <math.h>
+
+using namespace std;
+
+double f(double x, double y, double z)
+{
+	return sin(2 * x * y) * cos(y * z / 5);
+}
+
+void print(double* a, int k)
+{
+	for (int i = 0; i < k; i++)
+		std::cout << a[i] << ' ';
+	std::cout << '\n';
+}
+
+double* mass(int* a, int k)
+{
+	double* array = new double[k];
+	for (int i = 0; i < k; i++)
+		array[i] = a[i];
+	return array;
+}
+
+void Place(int* a, int k, int r, double* up, double* down, double* h)
+{
+	if (r == k)
+		mass(a, k);
+
+	else
+	{
+		for (int i = 0; i <= k; i++)
+		{
+			a[r] = i;
+			Place(a, k, r + 1, up, down, h);
+		}
+	}
+}
+
+
+void Right_Rect(int* a, int k, double* up, double* down, double* h)
+{
+	double sum = 0.0;
+	Place(a, 3, 0, 0, 0, 0);
+
+	for (int i = 0; i < k; i++)
+		sum+=h[i]* h[i+1] * h[i+2] * f(up[i] + mass(a, k)[i] * h[i], up[i+1] + mass(a, k)[i+1] * h[i+1], up[i+2] + mass(a, k)[i+2] * h[i+2]);
+	
+	cout << sum;
+}
+
+int main()
+{
+	setlocale(LC_ALL, "");
+
+	int k, r = 0;
+	cout << "Введите кратность интеграла: \n";
+	cin >> k;
+	int* a = new int[k];
+
+	for (int i = 0; i < k; i++)
+	{
+		a[i] = i;
+	}
+
+	double* up = new double[k];
+	double* down = new double[k];
+	double* h = new double[k];
+
+	cout << "Введите верхние границы интегралов (от внутреннего): \n";
+	for (int i = 0; i < k; i++)
+		cin >> up[i];
+	
+	cout << "Введите нижние границы интегралов (от внутреннего): \n";
+	for (int i = 0; i < k; i++)
+		cin >> down[i];
+	
+	for (int i = 0; i < k; i++)
+		h[i] = (down[i] - up[i]) * 1.0 / k;
+	
+	Right_Rect(a, k, up, down, h);
+	cout << endl << "Real = " << - 0.319810868 << endl;
+	
+	return 0;
+}
